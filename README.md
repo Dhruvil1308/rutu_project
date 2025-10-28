@@ -1,4 +1,4 @@
-# Ecommerce Recommendation System
+# Product Recommendation System
 
 This project exposes a Flask-based web experience for an ecommerce catalogue and includes a content-based product recommender that blends textual similarity with lightweight popularity signals.
 
@@ -8,7 +8,7 @@ This project exposes a Flask-based web experience for an ecommerce catalogue and
 - **Popularity-aware re-ranking** using product rating and log-transformed review volumes.
 - **Fuzzy search fallback** to handle typos and suggestions when an exact product match is unavailable.
 - **Modular architecture** (`config.py`, `recommendation.py`, templates, static assets) for easier maintenance and extension.
-- **Database-ready authentication** templates using MySQL via SQLAlchemy. (Sign-in is illustrative only; extend with proper hashing and validation before production use.)
+- **Secure MySQL-backed authentication** with hashed passwords, session management, and login gating before recommendation access.
 
 ## Repository Layout
 
@@ -17,8 +17,9 @@ app.py                 # Flask application with routes and dependency wiring
 config.py              # Shared configuration helpers and constants
 recommendation.py      # Recommendation engine implementation
 requirements.txt       # Python dependencies
-templates/             # Jinja2 templates (index, main, partials)
+templates/             # Jinja2 templates (base, dashboard, auth pages, partials)
 static/js/main.js      # Front-end behaviour for settings/zoom actions
+schema.sql             # MySQL bootstrap script for phpMyAdmin import
 clean_data.csv         # Sample catalogue used for training the recommender
 trending_products.csv  # Sample trending products for homepage carousel
 ```
@@ -44,18 +45,18 @@ trending_products.csv  # Sample trending products for homepage carousel
    pip install -r requirements.txt
    ```
 
-3. **Initialise the database (optional demo only):**
+3. **Provision the database:**
 
-   The application wires SQLAlchemy to `mysql://root:@localhost/ecom`. Update `SQLALCHEMY_DATABASE_URI` in `app.py` to match your environment and create the schema:
+   - Import `schema.sql` into phpMyAdmin (XAMPP) to create the `product_recommendation_system` schema and `users` table.
+   - Update `SQLALCHEMY_DATABASE_URI` in `app.py` if your MySQL credentials differ from `mysql://root:@localhost/product_recommendation_system`.
+   - Alternatively, initialise via SQLAlchemy:
 
-   ```powershell
-   python - <<'PY'
-   from app import db
-   db.create_all()
-   PY
-   ```
-
-   > ⚠️ Passwords are stored in plain text in this demo. Integrate hashing and proper auth before production.
+     ```powershell
+     python - <<'PY'
+     from app import db
+     db.create_all()
+     PY
+     ```
 
 4. **Run the Flask server:**
 
@@ -96,6 +97,6 @@ Consider the following guidelines for sustained quality:
 
 ## Next Steps
 
-- Replace placeholder authentication with a production-ready user model, password hashing, and session management.
+- Extend the user model with roles or personalization toggles to tailor recommendations by segment.
 - Add analytics endpoints to surface top-performing products and track recommendation click-throughs.
 - Containerise the application (Docker + Gunicorn) for deployment consistency once satisfied with accuracy and performance.
